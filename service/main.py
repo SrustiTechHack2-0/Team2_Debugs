@@ -46,10 +46,9 @@ api_thread.start()
 
 model = YOLO("yolov8n.pt")
 
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(1)
 
-# 🔁 CHANGED: vertical gate line
-GATE_LINE_X = 400   # adjust left/right as needed
+GATE_LINE_X = 500
 OFFSET = 10
 
 previous_centers = []
