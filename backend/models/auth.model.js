@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-constuserSchema = new mongoose.Schema({
+const userSchema = new mongoose.Schema({
     authId: {
         type: String,
         required: true,
@@ -9,26 +9,24 @@ constuserSchema = new mongoose.Schema({
 
     allowedPersons: {
         type: Number,
-        required: [false, 'If not provided default is set to 1'],
+        required: [false, 'If not provided then default is 1'],
         default: 1
     },
 
     gateId: {
         type: String,
-        required: [false, 'If not provided default is set to GATE_1'],
-        default: "GATE_1"
+        required: true
     },
 
     timeWindow: {
         type: Number,
-        required: [false, 'If not provided default is set to 30s'],
         default: 30
     },
 
     status: {
         type: String,
         enum: ["active", "used"],
-        default: "actve"
+        default: "active"
     },
 
     createdAt: {
@@ -38,4 +36,4 @@ constuserSchema = new mongoose.Schema({
     }
 });
 
-export const userAuth = mongoose.model("userAuth", userSchema);
+export const userAuth =  mongoose.model("userAuth", userSchema);

@@ -5,8 +5,9 @@ export const receiveAlert = async (req, res) => {
   try {
     const alertData = req.body;
 
-    console.log("Alert Received:", alertData);
+    console.log("🚨 ALERT RECEIVED:", alertData);
 
+    // Save alert
     const alert = await Alert.create({
       type: alertData.type,
       gateId: alertData.gateId,
@@ -15,12 +16,13 @@ export const receiveAlert = async (req, res) => {
       timestamp: new Date()
     });
 
+    // Trigger actions
     triggerAlertActions(alert);
 
     res.json({ success: true });
 
   } catch (err) {
-    console.error("Alert error:", err.message);
+    console.error("❌ Alert error:", err.message);
     res.status(500).json({ success: false });
   }
 };

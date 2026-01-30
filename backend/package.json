@@ -1,5 +1,5 @@
 {
-  "name": "sentinelflow",
+  "name": "backend",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -14,7 +14,8 @@
     "dotenv": "^17.2.3",
     "express": "~4.16.1",
     "mongoose": "^9.1.5",
-    "morgan": "~1.9.1"
+    "morgan": "~1.9.1",
+    "nodemailer": "^7.0.13"
   },
   "devDependencies": {
     "nodemon": "^3.1.11"

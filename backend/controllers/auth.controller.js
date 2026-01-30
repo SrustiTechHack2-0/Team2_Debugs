@@ -1,15 +1,14 @@
-import mongoose from 'mongoose';
-import crypto from 'crypto';
-import axios from 'axios';
-
-import { userAuth } from '../models/auth.model';
+import mongoose from "mongoose";
+import crypto from "crypto";
+import { userAuth } from "../models/auth.model.js";
+import { PORT } from "../config/env.js";
+import axios from "axios";
 
 export const create = async (req, res) => {
     const session = await mongoose.startSession();
     session.startTransaction();
 
     try{
-
         const { allowedPersons, gateId, timeWindow } = req.body;
 
         const authId = crypto.randomUUID();
@@ -21,15 +20,15 @@ export const create = async (req, res) => {
             timeWindow
         });
 
-        res.status(200).json({
+        res.status(201).json({
             success: true,
             authId: auth.authId,
             allowedPersons,
             gateId,
             timeWindow
-        })
-        
-    } catch(err){
+        });
+
+    } catch(err) {
         res.status(500).json({
             success: false,
             message: err.message
@@ -38,8 +37,8 @@ export const create = async (req, res) => {
 };
 
 export const validate = async (req, res) => {
+    try {
 
-    try{
         const { authId } = req.body;
 
         const auth = await userAuth.findOne({ authId, status: "active"});
@@ -51,24 +50,27 @@ export const validate = async (req, res) => {
             });
         }
 
-        console.log("Auth Object from DB: ", auth);
+        console.log("🧾 AUTH OBJECT FROM DB:", auth);
 
-        console.log("Sending data to AI: ", {
+        console.log("🚀 SENDING TO AI:", {
             allowedPersons: auth.allowedPersons,
             gateId: auth.gateId,
             timeWindow: auth.timeWindow
         });
 
-        await axios.post("http://localhost:8000/ai/instruction", {
+
+        await axios.post("http://localhost:8000/ai/instruction",
+        {
             allowedPersons: auth.allowedPersons,
             gateId: auth.gateId,
             timeWindow: auth.timeWindow
         },
         {
             headers: {
-                "Content-Type": "application/json"
+            "Content-Type": "application/json"
             }
-        });
+        }
+        );
 
         auth.status = "used";
 
@@ -76,8 +78,9 @@ export const validate = async (req, res) => {
 
         res.json({
             success: true,
-            message: "Auth Validate and sent to AI"
+            message: "Auth validated and sent to AI"
         });
+
 
     } catch(err){
         res.status(500).json({
@@ -85,5 +88,4 @@ export const validate = async (req, res) => {
             message: err.message
         });
     }
-    
 }
