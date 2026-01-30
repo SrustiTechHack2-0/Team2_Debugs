@@ -40,6 +40,44 @@ export const create = async (req, res) => {
 export const validate = async (req, res) => {
 
     try{
+        const { authId } = req.body;
+
+        const auth = await userAuth.findOne({ authId, status: "active"});
+
+        if (!auth){
+            return res.status(404).json({
+                success: false,
+                message: "Invalid auth"
+            });
+        }
+
+        console.log("Auth Object from DB: ", auth);
+
+        console.log("Sending data to AI: ", {
+            allowedPersons: auth.allowedPersons,
+            gateId: auth.gateId,
+            timeWindow: auth.timeWindow
+        });
+
+        await axios.post("http://localhost:8000/ai/instruction", {
+            allowedPersons: auth.allowedPersons,
+            gateId: auth.gateId,
+            timeWindow: auth.timeWindow
+        },
+        {
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+
+        auth.status = "used";
+
+        await userAuth.deleteOne({ authId });
+
+        res.json({
+            success: true,
+            message: "Auth Validate and sent to AI"
+        });
 
     } catch(err){
         res.status(500).json({
@@ -47,13 +85,5 @@ export const validate = async (req, res) => {
             message: err.message
         });
     }
-    const { authId } = req.body;
-
-    const auth = await userAuth.findOne({ authId, status: "active"});
-
-    if (!auth){
-        return res.status(404).json({
-
-        })
-    };
+    
 }
